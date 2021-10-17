@@ -11,7 +11,8 @@ import socket
 HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
 PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
 data = b''
-speed = 0
+speed = 0               # The current speed mode of the rover
+wheels = [0, 0, 0, 0]   # The current speed configuration for each wheel
 
 # Just to check if it's working
 print("Server online")
@@ -20,6 +21,12 @@ print("Server online")
 # For the functions below, each index represents the motor for each wheel
 # i.e. wheels[0] = M1, wheels[1] = M2, ...
 # The mapping is based on figure 4 in the software training package 2
+
+
+# Stop all wheels
+def stop():
+    set_wheels = [0, 0, 0, 0]
+    return set_wheels
 
 
 # Move all wheels forward
@@ -60,14 +67,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             # Code below determines settings for movement (where input "wasd"
             # is used to control direction of movement) and speed (from input
             # "0" for no movement to input "5" for the fastest speed setting)
-            if data.decode('UTF-8') == 'w':
-                print(forward(speed))
+            if data.decode('UTF-8') == "stop":
+                wheels = stop()
+                print(wheels)
+            elif data.decode('UTF-8') == 'w':
+                wheels = forward(speed)
+                print(wheels)
             elif data.decode('UTF-8') == 'a':
-                print(turn_left(speed))
+                wheels = turn_left(speed)
+                print(wheels)
             elif data.decode('UTF-8') == 's':
-                print(backward(speed))
+                wheels = backward(speed)
+                print(wheels)
             elif data.decode('UTF-8') == 'd':
-                print(turn_right(speed))
+                wheels = turn_right(speed)
+                print(wheels)
             elif data.decode('UTF-8') == '0':
                 speed = 0
             elif data.decode('UTF-8') == '1':

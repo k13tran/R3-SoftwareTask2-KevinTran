@@ -19,7 +19,12 @@ def on_press(key):
         pass
 
 
-listener = keyboard.Listener(on_press=on_press)
+def on_release(key):
+    s.sendall(bytes("stop", 'utf-8'))
+
+
+# Listener for keyboard input
+listener = keyboard.Listener(on_press=on_press, on_release=on_release)
 listener.start()
 
 # Just to check if it's working
